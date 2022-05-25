@@ -131,7 +131,7 @@ const Parameter = () => {
       for (const [key] of Object.entries(data[0])) {
         if (!key.includes('_id') && key !== 'id') {
           columns.push({
-            name: key,
+            name: key.replace('_', ' ').toUpperCase(),
             selector: (row) => row[key],
             sortable: true,
           })

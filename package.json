@@ -26,6 +26,7 @@
     "coreui_library_short_version": "4.1"
   },
   "dependencies": {
+    "mapbox-gl": "^2.8.1",
     "@coreui/chartjs": "^3.0.0",
     "@coreui/coreui": "^4.1.4",
     "@coreui/icons": "^2.1.0",

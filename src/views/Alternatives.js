@@ -178,7 +178,7 @@ const Alternatives = () => {
       for (const [key] of Object.entries(rows[0])) {
         if (!key.includes('_id')) {
           columns.push({
-            name: key,
+            name: key.replace('_', ' ').toUpperCase(),
             selector: (row) => row[key],
             sortable: true,
           })
@@ -226,11 +226,14 @@ const Alternatives = () => {
             floatingLabel="Alternative name"
             placeholder="Name"
             onChange={(e) => setName(e.target.value)}
+            size="sm"
           />
           {parametersDetail.map((aspect) => {
             return aspect.criteria.map((criteria) => {
               return (
                 <CFormSelect
+                  size="sm"
+                  label={criteria.criteria_name}
                   key={criteria.criteria_id}
                   options={criteria.parameters.map((parameter) => {
                     return {

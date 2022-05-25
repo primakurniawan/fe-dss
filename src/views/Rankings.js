@@ -98,7 +98,7 @@ const Rankings = () => {
       for (const [key] of Object.entries(rows[0])) {
         if (!key.includes('_id')) {
           columns.push({
-            name: key,
+            name: key.replace('_', ' ').toUpperCase(),
             selector: (row) => row[key],
             sortable: true,
           })

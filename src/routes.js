@@ -5,6 +5,7 @@ const Aspects = React.lazy(() => import('./views/Aspects'))
 const Criteria = React.lazy(() => import('./views/Criteria'))
 const Parameters = React.lazy(() => import('./views/Parameters'))
 const Rankings = React.lazy(() => import('./views/Rankings'))
+const Shortest = React.lazy(() => import('./views/Shortest'))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
@@ -61,6 +62,7 @@ const routes = [
   { path: '/criteria', name: 'Criteria', element: Criteria },
   { path: '/parameters', name: 'Parameters', element: Parameters },
   { path: '/rankings', name: 'Rankings', element: Rankings },
+  { path: '/shortest', name: 'Shortest', element: Shortest },
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },

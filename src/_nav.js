@@ -11,6 +11,7 @@ import {
   cilList,
   cilListNumbered,
   cilListRich,
+  cilMap,
   cilNotes,
   cilPencil,
   cilPuzzle,
@@ -63,6 +64,12 @@ const _nav = [
     name: 'Rankings',
     to: '/rankings',
     icon: <CIcon icon={cilListNumbered} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Shortest',
+    to: '/shortest',
+    icon: <CIcon icon={cilMap} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
