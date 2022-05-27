@@ -1,40 +1,45 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useCallback } from 'react'
 import mapboxgl from 'mapbox-gl'
 import './Shortest.css'
-import stores from './../assets/data/stores'
-import routes from './../assets/data/routes'
+import axios from 'axios'
 
 mapboxgl.accessToken =
   'pk.eyJ1IjoicHJpbWFrdXJuaWF3YW4iLCJhIjoiY2wzamVrOHhvMDZyMzNqbzQ1cmt4anJ0ZCJ9.plWxz32egjvGNLpCZL9uVg'
 
-stores.features.forEach(function (store, i) {
-  store.properties.id = i
-})
+// stores.features.forEach(function (store, i) {
+//   store.properties.id = i
+// })
 
 const Shortest = () => {
+  const [stores, setStores] = useState([])
+  const [route, setRoute] = useState({})
+  const [storesFeatures, setStoresFeatures] = useState({})
   const map = useRef(null)
 
-  const [lng, setLng] = useState(5)
-  const [lat, setLat] = useState(34)
-  const [zoom, setZoom] = useState(1.5)
+  const [currentCoordinates, setCurrentCoordinates] = useState([0, 0])
 
   const [activeStoreId, setActiveScoreId] = useState(null)
+  const [firstClick, setFirstClick] = useState(true)
 
-  // Initialize map when component mounts
-  useEffect(() => {
-    map.current = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/light-v10',
-      center: [98.61031335121537, 3.511993806470417],
-      zoom: 13,
-    })
+  const getStores = async () => {
+    const response = await axios.get('http://localhost:3000/stores')
+    setStores((prevState) => response.data.data)
+  }
 
-    map.current.on('load', () => {
-      map.current.addSource('places', {
-        type: 'geojson',
-        data: stores,
+  const getRoutes = useCallback(
+    async (store_id) => {
+      const response = await axios.post('http://localhost:3000/stores/shortest', {
+        current_location: currentCoordinates,
+        store_id: store_id ?? activeStoreId,
       })
 
+      setRoute((prevState) => response.data.routes.routes[0])
+
+      if (!firstClick) {
+        map.current.removeLayer('route')
+        map.current.removeSource('route')
+      }
+      setFirstClick(false)
       map.current.addSource('route', {
         type: 'geojson',
         data: {
@@ -42,7 +47,7 @@ const Shortest = () => {
           properties: {},
           geometry: {
             type: 'LineString',
-            coordinates: routes.routes[0].geometry.coordinates,
+            coordinates: response.data.routes.routes[0].geometry.coordinates,
           },
         },
       })
@@ -60,16 +65,106 @@ const Shortest = () => {
           'line-width': 8,
         },
       })
+    },
+    [activeStoreId, currentCoordinates, firstClick],
+  )
 
-      buildLocationList(stores.features)
-      addMarkers()
+  // Initialize map when component mounts
+  useEffect(() => {
+    getStores()
+    navigator.geolocation.getCurrentPosition(function (position) {
+      setCurrentCoordinates((prevState) => [position.coords.longitude, position.coords.latitude])
     })
+    map.current = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/light-v10',
+      center: currentCoordinates,
+      zoom: 13,
+    })
+
+    map.current.on('load', () => {
+      map.current.addSource('places', {
+        type: 'geojson',
+        data: storesFeatures,
+      })
+    })
+
+    buildLocationList()
+    addMarkers()
 
     // Clean up on unmount
     return () => map.current.remove()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  function buildLocationList(stores) {
+  useEffect(() => {
+    setStoresFeatures((prevState) =>
+      stores.map((e) => {
+        return {
+          type: 'Feature',
+          properties: {
+            name: e.name,
+            address: e.name,
+            contact: e?.contact,
+          },
+          geometry: {
+            coordinates: [e.lon, e.lat],
+            type: 'Point',
+          },
+        }
+      }),
+    )
+  }, [stores])
+
+  useEffect(() => {
+    // Create a new marker.
+    new mapboxgl.Marker().setLngLat(currentCoordinates).addTo(map.current)
+    map.current.loadImage(
+      'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
+      (error, image) => {
+        if (error) throw error
+        map.current.addImage('custom-marker', image)
+        // Add a GeoJSON source with 2 points
+        map.current.addSource('point', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                // feature for Mapbox SF
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: currentCoordinates,
+                },
+                properties: {
+                  title: 'Start Position',
+                },
+              },
+            ],
+          },
+        })
+
+        // Add a symbol layer
+        map.current.addLayer({
+          id: 'point',
+          type: 'symbol',
+          source: 'point',
+          layout: {
+            'icon-image': 'custom-marker',
+            // get the title name from the source's "title" property
+            'text-field': ['get', 'title'],
+            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            'text-offset': [0, 1.25],
+            'text-anchor': 'top',
+          },
+        })
+      },
+    )
+
+    map.current.flyTo({ center: currentCoordinates })
+  }, [currentCoordinates])
+
+  function buildLocationList() {
     map.current.on('click', (event) => {
       /* Determine if a feature in the "locations" layer exists at that point. */
       const features = map.current.queryRenderedFeatures(event.point, {
@@ -86,16 +181,18 @@ const Shortest = () => {
 
       /* Close all other popups and display popup for clicked store */
       createPopUp(clickedPoint)
+
+      getRoutes(clickedPoint.id)
     })
   }
 
-  function addMarkers() {
+  const addMarkers = useCallback(() => {
     /* For each feature in the GeoJSON object above: */
-    for (const marker of stores.features) {
+    for (const marker of stores) {
       /* Create a div element for the marker. */
       const el = document.createElement('div')
       /* Assign a unique `id` to the marker. */
-      el.id = `marker-${marker.properties.id}`
+      el.id = `marker-${marker.id}`
       /* Assign the `marker` class to each marker for styling. */
       el.className = 'marker'
 
@@ -104,23 +201,28 @@ const Shortest = () => {
        * defined above and add it to the map.
        **/
       new mapboxgl.Marker(el, { offset: [0, -23] })
-        .setLngLat(marker.geometry.coordinates)
+        .setLngLat([marker.lon, marker.lat])
         .addTo(map.current)
       el.addEventListener('click', (e) => {
         /* Fly to the point */
         flyToStore(marker)
         /* Close all other popups and display popup for clicked store */
         createPopUp(marker)
-        /* Highlight listing in sidebar */
+
+        getRoutes(marker.id)
         e.stopPropagation()
-        setActiveScoreId(marker.properties.id)
+        setActiveScoreId(marker.id)
       })
     }
-  }
+  }, [getRoutes, stores])
+
+  useEffect(() => {
+    addMarkers()
+  }, [addMarkers, stores])
 
   function flyToStore(currentFeature) {
     map.current.flyTo({
-      center: currentFeature.geometry.coordinates,
+      center: [currentFeature.lon, currentFeature.lat],
       zoom: 15,
     })
   }
@@ -131,10 +233,8 @@ const Shortest = () => {
     if (popUps[0]) popUps[0].remove()
 
     new mapboxgl.Popup({ closeOnClick: false })
-      .setLngLat(currentFeature.geometry.coordinates)
-      .setHTML(
-        `<h3>${currentFeature.properties.title}</h3><h4>${currentFeature.properties.address}</h4>`,
-      )
+      .setLngLat([currentFeature.lon, currentFeature.lat])
+      .setHTML(`<h3>${currentFeature.name}</h3><h4>${currentFeature.address}</h4>`)
       .addTo(map.current)
   }
 
@@ -145,50 +245,54 @@ const Shortest = () => {
           <h1>Our locations</h1>
         </div>
         <div id="listings" className="listings">
-          {stores.features.map((store) => {
-            return (
-              <div
-                key={store.properties.id}
-                id={`listing-${store.properties.id}`}
-                className={`item ${store.properties.id === activeStoreId && 'active'}`}
-              >
-                <span
-                  href="#"
-                  id={`link-${store.properties.id}`}
-                  className="title"
+          {stores.length > 0 &&
+            stores.map((store) => {
+              return (
+                <div
+                  key={store.id}
+                  id={`listing-${store.id}`}
+                  className={`item ${store.id === activeStoreId ? 'active' : ''}`}
                   onClick={function () {
-                    for (const feature of stores.features) {
-                      if (store.properties.id === feature.properties.id) {
-                        flyToStore(feature)
-                        createPopUp(feature)
+                    for (const e of stores) {
+                      if (store.id === e.id) {
+                        flyToStore(e)
+                        createPopUp(e)
+                        getRoutes(e.id)
                       }
                     }
-                    setActiveScoreId(store.properties.id)
+                    setActiveScoreId(store.id)
                   }}
                 >
-                  {store.properties.address}
-                </span>
-                <div>
-                  {store.properties.title}{' '}
-                  {store.properties.contact ? ` · ${store.properties.contact}` : ''}
+                  <span
+                    id={`link-${store.id}`}
+                    className={`title ${store.id === activeStoreId ? 'active' : ''}`}
+                  >
+                    {store.name}
+                  </span>
+                  <div>
+                    <small>{store.address}</small>
+                    <br />
+                    <small>{store?.contact}</small>
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
         </div>
       </div>
       <div id="map" className="map"></div>
-
-      <div id="instructions">
-        <p>
-          <strong>Trip duration: {Math.floor(routes.routes[0].duration / 60)} min 🚗 </strong>
-        </p>
-        <ol>
-          {routes.routes[0].legs.map((leg, i) =>
-            leg.steps.map((step, i) => <li key={i + i}>{step.maneuver.instruction}</li>),
-          )}
-        </ol>
-      </div>
+      {route?.legs?.length > 0 && (
+        <div id="instructions">
+          <p>
+            <strong>Trip duration: {Math.floor(route.duration / 60)} min 🚗 </strong>
+            <strong>Trip distance: {Math.floor(route.distance / 100)} km 🚗 </strong>
+          </p>
+          <ol>
+            {route.legs.map((leg, i) =>
+              leg.steps.map((step, j) => <li key={`${i}${j}`}>{step.maneuver.instruction}</li>),
+            )}
+          </ol>
+        </div>
+      )}
     </div>
   )
 }
