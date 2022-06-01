@@ -14,6 +14,7 @@ import {
   CListGroup,
   CListGroupItem,
 } from '@coreui/react'
+import CIcon from '@coreui/icons-react'
 
 const Alternatives = () => {
   const [data, setData] = useState([])
@@ -51,7 +52,7 @@ const Alternatives = () => {
       }
     })
 
-    setData(response.data.data)
+    setData((prevState) => response.data.data)
 
     setRows(
       response.data.data.map((alternative) => {
@@ -60,7 +61,12 @@ const Alternatives = () => {
           name: alternative.alternative_name,
           action: (
             <>
-              <CButtonGroup role="group" aria-label="Basic action" key={alternative.alternative_id}>
+              <CButtonGroup
+                role="group"
+                aria-label="Basic action"
+                key={alternative.alternative_id}
+                size="sm"
+              >
                 <CButton
                   color="warning"
                   onClick={() => {
@@ -107,7 +113,7 @@ const Alternatives = () => {
       name,
       parameters_id,
     })
-    if (response.status === 200) {
+    if (response.status === 201) {
       getAlternative()
     }
   }
@@ -149,23 +155,19 @@ const Alternatives = () => {
     }
   }
 
-  const expandableComponent = (rows) => {
-    return data
-      .filter((e) => e.alternative_id === rows.data.alternative_id)[0]
-      .aspects.map((e) => {
-        return (
-          <CListGroup key={e.aspect_id}>
-            {e.criteria.map((e) => {
-              return (
-                <CListGroupItem key={e.id}>
-                  {e.criteria_name}:{e.parameter.parameter_name}
-                </CListGroupItem>
-              )
-            })}
-          </CListGroup>
-        )
-      })
-  }
+  const expandableComponent = (rows) => (
+    <CListGroup flush>
+      {data
+        .filter((e) => e.alternative_id === rows.data.alternative_id)[0]
+        ?.aspects.map((e) =>
+          e.criteria.map((e, i) => (
+            <CListGroupItem key={i}>
+              {e.criteria_name}:{e.parameter.parameter_name}
+            </CListGroupItem>
+          )),
+        )}
+    </CListGroup>
+  )
 
   useEffect(() => {
     getAlternative()
@@ -197,6 +199,7 @@ const Alternatives = () => {
           })
         }
         color="success"
+        my={5}
       >
         Add Alternative
       </CButton>
@@ -333,9 +336,9 @@ const Alternatives = () => {
                         defaultValue={
                           data
                             .filter((e) => e.alternative_id === alternative.alternative_id)[0]
-                            .aspects.filter((e) => e.aspect_id === aspect.aspect_id)[0]
-                            .criteria.filter((e) => e.criteria_id === criteria.criteria_id)[0]
-                            .parameter.parameter_id
+                            ?.aspects.filter((e) => e.aspect_id === aspect.aspect_id)[0]
+                            ?.criteria.filter((e) => e.criteria_id === criteria.criteria_id)[0]
+                            ?.parameter.parameter_id
                         }
                       />
                     )

@@ -87,7 +87,7 @@ const Aspects = () => {
 
   const addAspect = async () => {
     const response = await Axios.post('http://localhost:3000/aspects', input)
-    if (response.status === 200) {
+    if (response.status === 201) {
       getAspects()
       setVisible({
         ...visible,
@@ -98,6 +98,7 @@ const Aspects = () => {
 
   const editAspect = async (id) => {
     const response = await Axios.patch(`http://localhost:3000/aspects/${id}`, input)
+    console.log(input)
     if (response.status === 200) {
       getAspects()
     }
@@ -264,7 +265,7 @@ const Aspects = () => {
                     setInput((inputPrev) => {
                       return {
                         ...inputPrev,
-                        name: e.target.value,
+                        percentage: e.target.value,
                       }
                     })
                   }}

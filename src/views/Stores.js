@@ -90,7 +90,7 @@ const Stores = () => {
 
   const addStore = async () => {
     const response = await Axios.post('http://localhost:3000/stores', input)
-    if (response.status === 200) {
+    if (response.status === 201) {
       getStores()
       setVisible({
         ...visible,

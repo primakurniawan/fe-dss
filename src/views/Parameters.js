@@ -92,7 +92,7 @@ const Parameter = () => {
 
   const addParameter = async () => {
     const response = await Axios.post('http://localhost:3000/parameters', input)
-    if (response.status === 200) {
+    if (response.status === 201) {
       getParameter()
       setVisible({
         ...visible,
@@ -140,7 +140,6 @@ const Parameter = () => {
       setColumns(columns)
     }
   }, [data])
-
   return (
     <>
       <CButton
@@ -176,10 +175,15 @@ const Parameter = () => {
         <CModalBody>
           <CFormSelect
             options={criteria.map((criteria) => ({
-              value: data.id,
+              value: criteria.criteria_id,
               label: criteria.criteria_name,
             }))}
-            onChange={(e) => setInput()}
+            onChange={(e) =>
+              setInput((prevInput) => ({
+                ...prevInput,
+                criteria_id: parseInt(e.target.value),
+              }))
+            }
           />
           <CFormInput
             type="text"
@@ -227,9 +231,9 @@ const Parameter = () => {
       </CModal>
       <DataTable columns={columns} data={data} />
 
-      {data.map((parameter) => {
+      {data.map((parameter, i) => {
         return (
-          <>
+          <div key={i}>
             <CModal
               visible={visible.edit[parameter.id]}
               onClose={() =>
@@ -256,19 +260,6 @@ const Parameter = () => {
                 <CModalTitle>Edit Parameter</CModalTitle>
               </CModalHeader>
               <CModalBody>
-                <CFormSelect
-                  value={parameter.criteria_id}
-                  options={criteria.map((criteria) => ({
-                    value: parameter.id,
-                    label: criteria.criteria_name,
-                  }))}
-                  onChange={(e) =>
-                    setInput((prevInput) => ({
-                      ...prevInput,
-                      criteria_id: parseInt(e.target.value),
-                    }))
-                  }
-                />
                 <CFormInput
                   type="text"
                   id="floatingName"
@@ -365,7 +356,7 @@ const Parameter = () => {
                 </CButton>
               </CModalFooter>
             </CModal>
-          </>
+          </div>
         )
       })}
     </>

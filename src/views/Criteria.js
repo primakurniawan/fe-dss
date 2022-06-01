@@ -37,8 +37,8 @@ const Criteria = () => {
       delete: {},
     }
     await response.data.data.forEach((criteria) => {
-      visible.edit[criteria.criteria_id] = false
-      visible.delete[criteria.criteria_id] = false
+      visible.edit[criteria.id] = false
+      visible.delete[criteria.id] = false
     })
     setVisible((prevVisible) => {
       return {
@@ -55,7 +55,7 @@ const Criteria = () => {
               <CButtonGroup
                 role="group"
                 aria-label="Basic action"
-                key={`action_button_${criteria.criteria_id}`}
+                key={`action_button_${criteria.id}`}
               >
                 <CButton
                   color="warning"
@@ -64,7 +64,7 @@ const Criteria = () => {
                       ...prevVisible,
                       edit: {
                         ...prevVisible.edit,
-                        [criteria.criteria_id]: true,
+                        [criteria.id]: true,
                       },
                     }))
                   }}
@@ -79,7 +79,7 @@ const Criteria = () => {
                       ...prevVisible,
                       delete: {
                         ...prevVisible.delete,
-                        [criteria.criteria_id]: true,
+                        [criteria.id]: true,
                       },
                     }))
                   }}
@@ -96,7 +96,7 @@ const Criteria = () => {
 
   const addCriteria = async () => {
     const response = await Axios.post('http://localhost:3000/criteria', input)
-    if (response.status === 200) {
+    if (response.status === 201) {
       getCriteria()
     }
   }
@@ -234,15 +234,15 @@ const Criteria = () => {
 
       {data.map((criteria) => {
         return (
-          <div key={criteria.criteria_id}>
+          <div key={criteria.id}>
             <CModal
-              visible={visible.edit[criteria.criteria_id]}
+              visible={visible.edit[criteria.id]}
               onClose={() => {
                 setVisible({
                   ...visible,
                   edit: {
                     ...visible.edit,
-                    [criteria.criteria_id]: false,
+                    [criteria.id]: false,
                   },
                 })
               }}
@@ -253,7 +253,7 @@ const Criteria = () => {
                     ...visible,
                     edit: {
                       ...visible.edit,
-                      [criteria.criteria_id]: false,
+                      [criteria.id]: false,
                     },
                   })
                 }}
@@ -285,7 +285,7 @@ const Criteria = () => {
                       name: e.target.value,
                     }))
                   }}
-                  defaultValue={criteria.criteria_name}
+                  defaultValue={criteria.name}
                 />
                 <CFormInput
                   type="number"
@@ -300,7 +300,7 @@ const Criteria = () => {
                       percentage: parseInt(e.target.value),
                     }))
                   }}
-                  defaultValue={criteria.criteria_percentage}
+                  defaultValue={criteria.percentage}
                 />
               </CModalBody>
               <CModalFooter>
@@ -311,27 +311,27 @@ const Criteria = () => {
                       ...visible,
                       edit: {
                         ...visible.edit,
-                        [criteria.criteria_id]: false,
+                        [criteria.id]: false,
                       },
                     })
                   }}
                 >
                   Close
                 </CButton>
-                <CButton color="primary" onClick={editCriteria.bind(this, criteria.criteria_id)}>
+                <CButton color="primary" onClick={editCriteria.bind(this, criteria.id)}>
                   Edit Criteria
                 </CButton>
               </CModalFooter>
             </CModal>
 
             <CModal
-              visible={visible.delete[criteria.criteria_id]}
+              visible={visible.delete[criteria.id]}
               onClose={() => {
                 setVisible({
                   ...visible,
                   delete: {
                     ...visible.delete,
-                    [criteria.criteria_id]: false,
+                    [criteria.id]: false,
                   },
                 })
               }}
@@ -342,14 +342,14 @@ const Criteria = () => {
                     ...visible,
                     delete: {
                       ...visible.delete,
-                      [criteria.criteria_id]: false,
+                      [criteria.id]: false,
                     },
                   })
                 }}
               >
                 <CModalTitle>Delete Criteria</CModalTitle>
               </CModalHeader>
-              <CModalBody>Are you sure you want to delete {criteria.criteria_name}?</CModalBody>
+              <CModalBody>Are you sure you want to delete {criteria.name}?</CModalBody>
               <CModalFooter>
                 <CButton
                   color="secondary"
@@ -358,14 +358,14 @@ const Criteria = () => {
                       ...visible,
                       delete: {
                         ...visible.delete,
-                        [criteria.criteria_id]: false,
+                        [criteria.id]: false,
                       },
                     })
                   }}
                 >
                   Close
                 </CButton>
-                <CButton color="primary" onClick={deleteCriteria.bind(this, criteria.criteria_id)}>
+                <CButton color="primary" onClick={deleteCriteria.bind(this, criteria.id)}>
                   Delete Criteria
                 </CButton>
               </CModalFooter>

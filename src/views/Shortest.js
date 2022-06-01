@@ -32,8 +32,7 @@ const Shortest = () => {
         current_location: currentCoordinates,
         store_id: store_id ?? activeStoreId,
       })
-
-      setRoute((prevState) => response.data.routes.routes[0])
+      setRoute((prevState) => response.data.data.routes[0])
 
       if (!firstClick) {
         map.current.removeLayer('route')
@@ -47,7 +46,7 @@ const Shortest = () => {
           properties: {},
           geometry: {
             type: 'LineString',
-            coordinates: response.data.routes.routes[0].geometry.coordinates,
+            coordinates: response.data.data.routes[0].geometry.coordinates,
           },
         },
       })

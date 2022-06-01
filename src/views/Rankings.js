@@ -29,19 +29,18 @@ const Rankings = () => {
   const [name, setName] = useState('')
 
   const getAlternativeRank = async () => {
+    setVisible(false)
     const parameters_id = []
     for (const [, value] of Object.entries(criteria_idParameter_id)) {
       parameters_id.push(value)
     }
-
-    const response = await Axios.post('http://localhost:3000/alternatives/rank', {
-      parameters_id,
-    })
-
-    setData(response.data.rank)
+    const response = await Axios.get(
+      `http://localhost:3000/alternatives/rank?parameters_id=[${parameters_id}]`,
+    )
+    setData(response.data.data)
 
     setRows(
-      response.data.rank.map((alternative) => {
+      response.data.data.map((alternative) => {
         return {
           alternative_id: alternative.alternative_id,
           rank: alternative.rank,
