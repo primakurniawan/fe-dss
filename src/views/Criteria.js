@@ -12,6 +12,7 @@ import {
   CModalTitle,
   CFormSelect,
 } from '@coreui/react'
+import { useSelector } from 'react-redux'
 
 const Criteria = () => {
   const [columns, setColumns] = useState()
@@ -29,8 +30,10 @@ const Criteria = () => {
     percentage: 0,
   })
 
-  const getCriteria = async () => {
-    const response = await Axios.get('http://localhost:3000/criteria')
+  const { selected } = useSelector((state) => state.categories)
+
+  const getCriteria = async (category_id) => {
+    const response = await Axios.get(`http://localhost:3000/criteria?category_id=${category_id}`)
     const visible = {
       add: false,
       edit: {},
@@ -97,33 +100,33 @@ const Criteria = () => {
   const addCriteria = async () => {
     const response = await Axios.post('http://localhost:3000/criteria', input)
     if (response.status === 201) {
-      getCriteria()
+      getCriteria(selected)
     }
   }
 
-  const getAspects = async () => {
-    const response = await Axios.get('http://localhost:3000/aspects')
+  const getAspects = async (category_id) => {
+    const response = await Axios.get(`http://localhost:3000/aspects?category_id=${category_id}`)
     setAspects(response.data.data)
   }
 
   const editCriteria = async (id) => {
     const response = await Axios.patch(`http://localhost:3000/criteria/${id}`, input)
     if (response.status === 200) {
-      getCriteria()
+      getCriteria(selected)
     }
   }
 
   const deleteCriteria = async (id) => {
     const response = await Axios.delete(`http://localhost:3000/criteria/${id}`)
     if (response.status === 200) {
-      getCriteria()
+      getCriteria(selected)
     }
   }
 
   useEffect(() => {
-    getCriteria()
-    getAspects()
-  }, [])
+    getCriteria(selected)
+    getAspects(selected)
+  }, [selected])
 
   useEffect(() => {
     let columns = []
@@ -230,7 +233,7 @@ const Criteria = () => {
           </CButton>
         </CModalFooter>
       </CModal>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} pagination />
 
       {data.map((criteria) => {
         return (

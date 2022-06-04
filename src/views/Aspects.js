@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import Axios from 'axios'
 import {
@@ -11,6 +11,7 @@ import {
   CModalHeader,
   CModalTitle,
 } from '@coreui/react'
+import { useSelector } from 'react-redux'
 
 const Aspects = () => {
   const [columns, setColumns] = useState()
@@ -25,8 +26,10 @@ const Aspects = () => {
     percentage: 0,
   })
 
-  const getAspects = async () => {
-    const response = await Axios.get('http://localhost:3000/aspects')
+  const { selected } = useSelector((state) => state.categories)
+
+  const getAspects = async (category_id) => {
+    const response = await Axios.get(`http://localhost:3000/aspects?category_id=${category_id}`)
     const visible = {
       add: false,
       edit: {},
@@ -86,9 +89,12 @@ const Aspects = () => {
   }
 
   const addAspect = async () => {
-    const response = await Axios.post('http://localhost:3000/aspects', input)
+    const response = await Axios.post(
+      `http://localhost:3000/aspects?category_id=${selected}`,
+      input,
+    )
     if (response.status === 201) {
-      getAspects()
+      getAspects(selected)
       setVisible({
         ...visible,
         add: false,
@@ -98,22 +104,21 @@ const Aspects = () => {
 
   const editAspect = async (id) => {
     const response = await Axios.patch(`http://localhost:3000/aspects/${id}`, input)
-    console.log(input)
     if (response.status === 200) {
-      getAspects()
+      getAspects(selected)
     }
   }
 
   const deleteAspect = async (id) => {
     const response = await Axios.delete(`http://localhost:3000/aspects/${id}`)
     if (response.status === 200) {
-      getAspects()
+      getAspects(selected)
     }
   }
 
   useEffect(() => {
-    getAspects()
-  }, [])
+    getAspects(selected)
+  }, [selected])
 
   useEffect(() => {
     let columns = []
@@ -208,7 +213,7 @@ const Aspects = () => {
           </CButton>
         </CModalFooter>
       </CModal>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} pagination />
 
       {data.map((aspect) => {
         return (

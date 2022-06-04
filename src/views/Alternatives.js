@@ -14,7 +14,7 @@ import {
   CListGroup,
   CListGroupItem,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+const { useSelector } = require('react-redux')
 
 const Alternatives = () => {
   const [data, setData] = useState([])
@@ -33,9 +33,12 @@ const Alternatives = () => {
   })
   const [criteria_idParameter_id, setCriteria_idParameter_id] = useState({})
   const [name, setName] = useState('')
+  const { selected } = useSelector((state) => state.categories)
 
-  const getAlternative = async () => {
-    const response = await Axios.get('http://localhost:3000/alternatives')
+  const getAlternative = async (category_id) => {
+    const response = await Axios.get(
+      `http://localhost:3000/alternatives?category_id=${category_id}`,
+    )
     const visible = {
       add: false,
       edit: {},
@@ -61,12 +64,7 @@ const Alternatives = () => {
           name: alternative.alternative_name,
           action: (
             <>
-              <CButtonGroup
-                role="group"
-                aria-label="Basic action"
-                key={alternative.alternative_id}
-                size="sm"
-              >
+              <CButtonGroup role="group" aria-label="Basic action" key={alternative.alternative_id}>
                 <CButton
                   color="warning"
                   onClick={() => {
@@ -109,17 +107,22 @@ const Alternatives = () => {
     for (const [, value] of Object.entries(criteria_idParameter_id)) {
       parameters_id.push(value)
     }
-    const response = await Axios.post('http://localhost:3000/alternatives', {
-      name,
-      parameters_id,
-    })
+    const response = await Axios.post(
+      `http://localhost:3000/alternatives?category_id=${selected}`,
+      {
+        name,
+        parameters_id,
+      },
+    )
     if (response.status === 201) {
-      getAlternative()
+      getAlternative(selected)
     }
   }
 
-  const getParametersDetail = async () => {
-    const response = await Axios.get('http://localhost:3000/parameters/detail')
+  const getParametersDetail = async (category_id) => {
+    const response = await Axios.get(
+      `http://localhost:3000/parameters/detail?category_id=${category_id}`,
+    )
     setParametersDetail(response.data.data)
 
     response.data.data.forEach((aspect) => {
@@ -144,14 +147,14 @@ const Alternatives = () => {
       parameters_id,
     })
     if (response.status === 200) {
-      getAlternative()
+      getAlternative(selected)
     }
   }
 
   const deleteAlternative = async (id) => {
     const response = await Axios.delete(`http://localhost:3000/alternatives/${id}`)
     if (response.status === 200) {
-      getAlternative()
+      getAlternative(selected)
     }
   }
 
@@ -170,9 +173,9 @@ const Alternatives = () => {
   )
 
   useEffect(() => {
-    getAlternative()
-    getParametersDetail()
-  }, [])
+    getAlternative(selected)
+    getParametersDetail(selected)
+  }, [selected])
 
   useEffect(() => {
     let columns = []
@@ -277,6 +280,7 @@ const Alternatives = () => {
         data={rows}
         expandableRows
         expandableRowsComponent={expandableComponent}
+        pagination
       />
 
       {rows.map((alternative) => {

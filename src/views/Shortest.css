@@ -186,7 +186,8 @@ a:hover {
   position: absolute;
   margin: 20px;
   width: 25%;
-  top: 0;
+  top: 25%;
+  /* transform: translateY(-50%); */
   right: 0;
   bottom: 20%;
   padding: 20px;

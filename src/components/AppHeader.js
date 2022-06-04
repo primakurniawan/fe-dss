@@ -1,77 +1,91 @@
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   CContainer,
   CHeader,
   CHeaderBrand,
-  CHeaderDivider,
   CHeaderNav,
-  CHeaderToggler,
   CNavLink,
   CNavItem,
+  CFormSelect,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
 
-import { AppBreadcrumb } from './index'
-import { AppHeaderDropdown } from './header/index'
 import { logo } from 'src/assets/brand/logo'
+import { change, get } from 'src/categoriesSlice'
+import axios from 'axios'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
+  const categories = useSelector((state) => state.categories)
+  const getCategories = useCallback(async () => {
+    const response = await axios.get(`http://localhost:3000/categories`)
+    dispatch(get(response.data.data))
+    dispatch(change(response.data.data[0].id))
+  }, [dispatch])
+  useEffect(() => {
+    getCategories()
+  }, [getCategories])
 
   return (
     <CHeader position="sticky" className="mb-4">
-      <CContainer fluid>
-        <CHeaderToggler
-          className="ps-1"
-          onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
-        >
-          <CIcon icon={cilMenu} size="lg" />
-        </CHeaderToggler>
+      <CContainer>
         <CHeaderBrand className="mx-auto d-md-none" to="/">
           <CIcon icon={logo} height={48} alt="Logo" />
         </CHeaderBrand>
         <CHeaderNav className="d-none d-md-flex me-auto">
           <CNavItem>
-            <CNavLink to="/dashboard" component={NavLink}>
-              Dashboard
+            <CFormSelect
+              size="sm"
+              // floatingLabel="categories"
+              options={categories.items.map((e) => {
+                return {
+                  value: e.id,
+                  label: e.name,
+                }
+              })}
+              defaultValue={categories.selected}
+              onChange={(e) => dispatch(change(parseInt(e.target.value)))}
+            />
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/alternatives" component={NavLink}>
+              Alternatives
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink href="#">Users</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
-          </CNavItem>
-        </CHeaderNav>
-        <CHeaderNav>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
+            <CNavLink to="/aspects" component={NavLink}>
+              Aspects
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilList} size="lg" />
+            <CNavLink to="/criteria" component={NavLink}>
+              Criteria
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilEnvelopeOpen} size="lg" />
+            <CNavLink to="/parameters" component={NavLink}>
+              Parameters
             </CNavLink>
           </CNavItem>
-        </CHeaderNav>
-        <CHeaderNav className="ms-3">
-          <AppHeaderDropdown />
+          <CNavItem>
+            <CNavLink to="/ranking" component={NavLink}>
+              Ranking
+            </CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/stores" component={NavLink}>
+              Stores
+            </CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/shortest" component={NavLink}>
+              Shortest
+            </CNavLink>
+          </CNavItem>
         </CHeaderNav>
       </CContainer>
-      {/* <CHeaderDivider /> */}
-      {/* <CContainer fluid>
-        <AppBreadcrumb />
-      </CContainer> */}
     </CHeader>
   )
 }

@@ -3,7 +3,6 @@ import DataTable from 'react-data-table-component'
 import Axios from 'axios'
 import {
   CButton,
-  CFormInput,
   CModal,
   CModalBody,
   CModalFooter,
@@ -13,8 +12,9 @@ import {
   CListGroup,
   CListGroupItem,
 } from '@coreui/react'
+import { useSelector } from 'react-redux'
 
-const Rankings = () => {
+const Ranking = () => {
   const [data, setData] = useState([])
   const [rows, setRows] = useState([])
   const [columns, setColumns] = useState()
@@ -27,15 +27,16 @@ const Rankings = () => {
   })
   const [criteria_idParameter_id, setCriteria_idParameter_id] = useState({})
   const [name, setName] = useState('')
+  const { selected } = useSelector((state) => state.categories)
 
-  const getAlternativeRank = async () => {
+  const getAlternativeRank = async (category_id) => {
     setVisible(false)
     const parameters_id = []
     for (const [, value] of Object.entries(criteria_idParameter_id)) {
       parameters_id.push(value)
     }
     const response = await Axios.get(
-      `http://localhost:3000/alternatives/rank?parameters_id=[${parameters_id}]`,
+      `http://localhost:3000/alternatives/rank?parameters_id=[${parameters_id}]&category_id=${category_id}`,
     )
     setData(response.data.data)
 
@@ -51,8 +52,10 @@ const Rankings = () => {
     )
   }
 
-  const getParametersDetail = async () => {
-    const response = await Axios.get('http://localhost:3000/parameters/detail')
+  const getParametersDetail = async (category_id) => {
+    const response = await Axios.get(
+      `http://localhost:3000/parameters/detail?category_id=${category_id}`,
+    )
     setParametersDetail(response.data.data)
 
     const criteriaIdParameterId = {}
@@ -69,27 +72,22 @@ const Rankings = () => {
     })
   }
 
-  const expandableComponent = (rows) => {
-    return data
-      .filter((e) => e.alternative_id === rows.data.alternative_id)[0]
-      .aspects.map((e) => {
-        return (
-          <CListGroup key={e.aspect_id}>
-            {e.criteria.map((e) => {
-              return (
-                <CListGroupItem key={e.id}>
-                  {e.criteria_name}:{e.parameter.parameter_name}
-                </CListGroupItem>
-              )
-            })}
-          </CListGroup>
-        )
-      })
-  }
-
+  const expandableComponent = (rows) => (
+    <CListGroup flush>
+      {data
+        .filter((e) => e.alternative_id === rows.data.alternative_id)[0]
+        ?.aspects.map((e) =>
+          e.criteria.map((e, i) => (
+            <CListGroupItem key={i}>
+              {e.criteria_name}:{e.parameter.parameter_name}
+            </CListGroupItem>
+          )),
+        )}
+    </CListGroup>
+  )
   useEffect(() => {
-    getParametersDetail()
-  }, [])
+    getParametersDetail(selected)
+  }, [selected])
 
   useEffect(() => {
     let columns = []
@@ -142,7 +140,7 @@ const Rankings = () => {
           <CButton color="secondary" onClick={() => setVisible(false)}>
             Close
           </CButton>
-          <CButton color="primary" onClick={getAlternativeRank}>
+          <CButton color="primary" onClick={getAlternativeRank.bind(this, selected)}>
             Add Preference
           </CButton>
         </CModalFooter>
@@ -152,9 +150,10 @@ const Rankings = () => {
         data={rows}
         expandableRows
         expandableRowsComponent={expandableComponent}
+        pagination
       />
     </>
   )
 }
 
-export default Rankings
+export default Ranking

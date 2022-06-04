@@ -12,6 +12,7 @@ import {
   CModalTitle,
   CFormSelect,
 } from '@coreui/react'
+import { useSelector } from 'react-redux'
 
 const Parameter = () => {
   const [data, setData] = useState([])
@@ -28,8 +29,10 @@ const Parameter = () => {
     point: 0,
   })
 
-  const getParameter = async () => {
-    const response = await Axios.get('http://localhost:3000/parameters')
+  const { selected } = useSelector((state) => state.categories)
+
+  const getParameter = async (category_id) => {
+    const response = await Axios.get(`http://localhost:3000/parameters?category_id=${category_id}`)
     const visible = {
       add: false,
       edit: {},
@@ -93,7 +96,7 @@ const Parameter = () => {
   const addParameter = async () => {
     const response = await Axios.post('http://localhost:3000/parameters', input)
     if (response.status === 201) {
-      getParameter()
+      getParameter(selected)
       setVisible({
         ...visible,
         add: true,
@@ -101,29 +104,29 @@ const Parameter = () => {
     }
   }
 
-  const getCriteria = async () => {
-    const response = await Axios.get('http://localhost:3000/criteria')
+  const getCriteria = async (category_id) => {
+    const response = await Axios.get(`http://localhost:3000/criteria?category_id=${category_id}`)
     setCriteria(response.data.data)
   }
 
   const editParameter = async (id) => {
     const response = await Axios.patch(`http://localhost:3000/parameters/${id}`, input)
     if (response.status === 200) {
-      getParameter()
+      getParameter(selected)
     }
   }
 
   const deleteParameter = async (id) => {
     const response = await Axios.delete(`http://localhost:3000/parameters/${id}`)
     if (response.status === 200) {
-      getParameter()
+      getParameter(selected)
     }
   }
 
   useEffect(() => {
-    getParameter()
-    getCriteria()
-  }, [])
+    getParameter(selected)
+    getCriteria(selected)
+  }, [selected])
 
   useEffect(() => {
     let columns = []
@@ -175,8 +178,8 @@ const Parameter = () => {
         <CModalBody>
           <CFormSelect
             options={criteria.map((criteria) => ({
-              value: criteria.criteria_id,
-              label: criteria.criteria_name,
+              value: criteria.id,
+              label: criteria.name,
             }))}
             onChange={(e) =>
               setInput((prevInput) => ({
@@ -229,7 +232,7 @@ const Parameter = () => {
           </CButton>
         </CModalFooter>
       </CModal>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} pagination />
 
       {data.map((parameter, i) => {
         return (

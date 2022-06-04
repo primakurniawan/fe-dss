@@ -11,6 +11,7 @@ import {
   CModalHeader,
   CModalTitle,
 } from '@coreui/react'
+import { useSelector } from 'react-redux'
 
 const Stores = () => {
   const [columns, setColumns] = useState()
@@ -28,8 +29,10 @@ const Stores = () => {
     lat: 0,
   })
 
-  const getStores = async () => {
-    const response = await Axios.get('http://localhost:3000/stores')
+  const { selected } = useSelector((state) => state.categories)
+
+  const getStores = async (category_id) => {
+    const response = await Axios.get(`http://localhost:3000/stores?category_id=${category_id}`)
     const visible = {
       add: false,
       edit: {},
@@ -89,9 +92,9 @@ const Stores = () => {
   }
 
   const addStore = async () => {
-    const response = await Axios.post('http://localhost:3000/stores', input)
+    const response = await Axios.post(`http://localhost:3000/stores?category_id=${selected}`, input)
     if (response.status === 201) {
-      getStores()
+      getStores(selected)
       setVisible({
         ...visible,
         add: false,
@@ -102,20 +105,20 @@ const Stores = () => {
   const editStore = async (id) => {
     const response = await Axios.patch(`http://localhost:3000/stores/${id}`, input)
     if (response.status === 200) {
-      getStores()
+      getStores(selected)
     }
   }
 
   const deleteStore = async (id) => {
     const response = await Axios.delete(`http://localhost:3000/stores/${id}`)
     if (response.status === 200) {
-      getStores()
+      getStores(selected)
     }
   }
 
   useEffect(() => {
-    getStores()
-  }, [])
+    getStores(selected)
+  }, [selected])
 
   useEffect(() => {
     let columns = []
@@ -248,7 +251,7 @@ const Stores = () => {
           </CButton>
         </CModalFooter>
       </CModal>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} pagination />
 
       {data.map((store) => {
         return (
