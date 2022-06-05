@@ -4,6 +4,7 @@ import Axios from 'axios'
 import {
   CButton,
   CButtonGroup,
+  CForm,
   CFormInput,
   CModal,
   CModalBody,
@@ -168,50 +169,54 @@ const Aspects = () => {
         >
           <CModalTitle>Add New Aspect</CModalTitle>
         </CModalHeader>
-        <CModalBody>
-          <CFormInput
-            type="text"
-            id="floatingName"
-            floatingLabel="Aspect name"
-            placeholder="Name"
-            onChange={(e) => {
-              setInput({
-                ...input,
-                name: e.target.value,
-              })
-            }}
-          />
-          <CFormInput
-            type="number"
-            id="floatingPercentage"
-            floatingLabel="Aspect Percentage"
-            placeholder="Percentage"
-            min={0}
-            max={100}
-            onChange={(e) => {
-              setInput({
-                ...input,
-                percentage: parseInt(e.target.value),
-              })
-            }}
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => {
-              setVisible({
-                ...visible,
-                add: false,
-              })
-            }}
-          >
-            Close
-          </CButton>
-          <CButton color="primary" onClick={addAspect}>
-            Add New Aspect
-          </CButton>
-        </CModalFooter>
+        <CForm onSubmit={addAspect}>
+          <CModalBody>
+            <CFormInput
+              type="text"
+              id="floatingName"
+              floatingLabel="Aspect name"
+              placeholder="Name"
+              onChange={(e) => {
+                setInput({
+                  ...input,
+                  name: e.target.value,
+                })
+              }}
+              required
+            />
+            <CFormInput
+              type="number"
+              id="floatingPercentage"
+              floatingLabel="Aspect Percentage"
+              placeholder="Percentage"
+              min={0}
+              max={100}
+              onChange={(e) => {
+                setInput({
+                  ...input,
+                  percentage: parseInt(e.target.value),
+                })
+              }}
+              required
+            />
+          </CModalBody>
+          <CModalFooter>
+            <CButton
+              color="secondary"
+              onClick={() => {
+                setVisible({
+                  ...visible,
+                  add: false,
+                })
+              }}
+            >
+              Close
+            </CButton>
+            <CButton color="primary" type="submit">
+              Add New Aspect
+            </CButton>
+          </CModalFooter>
+        </CForm>
       </CModal>
       <DataTable columns={columns} data={data} pagination />
 
@@ -243,59 +248,63 @@ const Aspects = () => {
               >
                 <CModalTitle>Edit Aspect</CModalTitle>
               </CModalHeader>
-              <CModalBody>
-                <CFormInput
-                  type="text"
-                  id="floatingName"
-                  floatingLabel="Aspect name"
-                  placeholder="Name"
-                  onChange={(e) => {
-                    setInput((inputPrev) => {
-                      return {
-                        ...inputPrev,
-                        name: e.target.value,
-                      }
-                    })
-                  }}
-                  defaultValue={aspect.name}
-                />
-                <CFormInput
-                  type="number"
-                  id="floatingPercentage"
-                  floatingLabel="Aspect Percentage"
-                  placeholder="Percentage"
-                  min={0}
-                  max={100}
-                  onChange={(e) => {
-                    setInput((inputPrev) => {
-                      return {
-                        ...inputPrev,
-                        percentage: e.target.value,
-                      }
-                    })
-                  }}
-                  defaultValue={aspect.percentage}
-                />
-              </CModalBody>
-              <CModalFooter>
-                <CButton
-                  color="secondary"
-                  onClick={() => {
-                    setVisible((prevVisible) => ({
-                      ...prevVisible,
-                      edit: {
-                        ...prevVisible.edit,
-                        [aspect.id]: false,
-                      },
-                    }))
-                  }}
-                >
-                  Close
-                </CButton>
-                <CButton color="primary" onClick={editAspect.bind(this, aspect.id)}>
-                  Edit Aspect
-                </CButton>
-              </CModalFooter>
+              <CForm onSubmit={() => editAspect(aspect.id)}>
+                <CModalBody>
+                  <CFormInput
+                    type="text"
+                    id="floatingName"
+                    floatingLabel="Aspect name"
+                    placeholder="Name"
+                    onChange={(e) => {
+                      setInput((inputPrev) => {
+                        return {
+                          ...inputPrev,
+                          name: e.target.value,
+                        }
+                      })
+                    }}
+                    defaultValue={aspect.name}
+                    required
+                  />
+                  <CFormInput
+                    type="number"
+                    id="floatingPercentage"
+                    floatingLabel="Aspect Percentage"
+                    placeholder="Percentage"
+                    min={0}
+                    max={100}
+                    onChange={(e) => {
+                      setInput((inputPrev) => {
+                        return {
+                          ...inputPrev,
+                          percentage: e.target.value,
+                        }
+                      })
+                    }}
+                    defaultValue={aspect.percentage}
+                    required
+                  />
+                </CModalBody>
+                <CModalFooter>
+                  <CButton
+                    color="secondary"
+                    onClick={() => {
+                      setVisible((prevVisible) => ({
+                        ...prevVisible,
+                        edit: {
+                          ...prevVisible.edit,
+                          [aspect.id]: false,
+                        },
+                      }))
+                    }}
+                  >
+                    Close
+                  </CButton>
+                  <CButton color="primary" type="submit">
+                    Edit Aspect
+                  </CButton>
+                </CModalFooter>
+              </CForm>
             </CModal>
 
             <CModal

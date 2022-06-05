@@ -4,6 +4,7 @@ import Axios from 'axios'
 import {
   CButton,
   CButtonGroup,
+  CForm,
   CFormInput,
   CModal,
   CModalBody,
@@ -168,88 +169,94 @@ const Stores = () => {
         >
           <CModalTitle>Add New Store</CModalTitle>
         </CModalHeader>
-        <CModalBody>
-          <CFormInput
-            type="text"
-            id="floatingName"
-            floatingLabel="Store name"
-            placeholder="Name"
-            onChange={(e) => {
-              setInput({
-                ...input,
-                name: e.target.value,
-              })
-            }}
-          />
-          <CFormInput
-            type="text"
-            id="floatingAddress"
-            floatingLabel="Store address"
-            placeholder="Address"
-            onChange={(e) => {
-              setInput({
-                ...input,
-                address: e.target.value,
-              })
-            }}
-          />
-          <CFormInput
-            type="text"
-            id="floatingContact"
-            floatingLabel="Store contact"
-            placeholder="Contact"
-            onChange={(e) => {
-              setInput({
-                ...input,
-                contact: e.target.value,
-              })
-            }}
-          />
-          <CFormInput
-            type="number"
-            id="floatingLongitude"
-            floatingLabel="Aspect Longitude"
-            placeholder="Longitude"
-            min={-180}
-            max={180}
-            onChange={(e) => {
-              setInput({
-                ...input,
-                lon: parseFloat(e.target.value),
-              })
-            }}
-          />
-          <CFormInput
-            type="number"
-            id="floatingLatitude"
-            floatingLabel="Aspect Latitude"
-            placeholder="Latitude"
-            min={-90}
-            max={90}
-            onChange={(e) => {
-              setInput({
-                ...input,
-                lat: parseFloat(e.target.value),
-              })
-            }}
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => {
-              setVisible({
-                ...visible,
-                add: false,
-              })
-            }}
-          >
-            Close
-          </CButton>
-          <CButton color="primary" onClick={addStore}>
-            Add New Store
-          </CButton>
-        </CModalFooter>
+        <CForm onSubmit={addStore}>
+          <CModalBody>
+            <CFormInput
+              type="text"
+              id="floatingName"
+              floatingLabel="Store name"
+              placeholder="Name"
+              onChange={(e) => {
+                setInput({
+                  ...input,
+                  name: e.target.value,
+                })
+              }}
+              required
+            />
+            <CFormInput
+              type="text"
+              id="floatingAddress"
+              floatingLabel="Store address"
+              placeholder="Address"
+              onChange={(e) => {
+                setInput({
+                  ...input,
+                  address: e.target.value,
+                })
+              }}
+              required
+            />
+            <CFormInput
+              type="text"
+              id="floatingContact"
+              floatingLabel="Store contact"
+              placeholder="Contact"
+              onChange={(e) => {
+                setInput({
+                  ...input,
+                  contact: e.target.value,
+                })
+              }}
+            />
+            <CFormInput
+              type="number"
+              id="floatingLongitude"
+              floatingLabel="Aspect Longitude"
+              placeholder="Longitude"
+              min={-180}
+              max={180}
+              onChange={(e) => {
+                setInput({
+                  ...input,
+                  lon: parseFloat(e.target.value),
+                })
+              }}
+              required
+            />
+            <CFormInput
+              type="number"
+              id="floatingLatitude"
+              floatingLabel="Aspect Latitude"
+              placeholder="Latitude"
+              min={-90}
+              max={90}
+              onChange={(e) => {
+                setInput({
+                  ...input,
+                  lat: parseFloat(e.target.value),
+                })
+              }}
+              required
+            />
+          </CModalBody>
+          <CModalFooter>
+            <CButton
+              color="secondary"
+              onClick={() => {
+                setVisible({
+                  ...visible,
+                  add: false,
+                })
+              }}
+            >
+              Close
+            </CButton>
+            <CButton color="primary" type="submit">
+              Add New Store
+            </CButton>
+          </CModalFooter>
+        </CForm>
       </CModal>
       <DataTable columns={columns} data={data} pagination />
 
@@ -281,96 +288,102 @@ const Stores = () => {
               >
                 <CModalTitle>Edit Store</CModalTitle>
               </CModalHeader>
-              <CModalBody>
-                <CFormInput
-                  type="text"
-                  id="floatingName"
-                  floatingLabel="Store name"
-                  placeholder="Name"
-                  onChange={(e) => {
-                    setInput({
-                      ...input,
-                      name: e.target.value,
-                    })
-                  }}
-                  defaultValue={store.name}
-                />
-                <CFormInput
-                  type="text"
-                  id="floatingAddress"
-                  floatingLabel="Store address"
-                  placeholder="Address"
-                  onChange={(e) => {
-                    setInput({
-                      ...input,
-                      address: e.target.value,
-                    })
-                  }}
-                  defaultValue={store.address}
-                />
-                <CFormInput
-                  type="text"
-                  id="floatingContact"
-                  floatingLabel="Store contact"
-                  placeholder="Contact"
-                  onChange={(e) => {
-                    setInput({
-                      ...input,
-                      contact: e.target.value,
-                    })
-                  }}
-                  defaultValue={store.contact}
-                />
-                <CFormInput
-                  type="number"
-                  id="floatingLongitude"
-                  floatingLabel="Aspect Longitude"
-                  placeholder="Longitude"
-                  min={-180}
-                  max={180}
-                  onChange={(e) => {
-                    setInput({
-                      ...input,
-                      lon: parseFloat(e.target.value),
-                    })
-                  }}
-                  defaultValue={store.lon}
-                />
-                <CFormInput
-                  type="number"
-                  id="floatingLatitude"
-                  floatingLabel="Aspect Latitude"
-                  placeholder="Latitude"
-                  min={-90}
-                  max={90}
-                  onChange={(e) => {
-                    setInput({
-                      ...input,
-                      lat: parseFloat(e.target.value),
-                    })
-                  }}
-                  defaultValue={store.lat}
-                />
-              </CModalBody>
-              <CModalFooter>
-                <CButton
-                  color="secondary"
-                  onClick={() => {
-                    setVisible((prevVisible) => ({
-                      ...prevVisible,
-                      edit: {
-                        ...prevVisible.edit,
-                        [store.id]: false,
-                      },
-                    }))
-                  }}
-                >
-                  Close
-                </CButton>
-                <CButton color="primary" onClick={editStore.bind(this, store.id)}>
-                  Edit Store
-                </CButton>
-              </CModalFooter>
+              <CForm onSubmit={() => editStore(store.id)}>
+                <CModalBody>
+                  <CFormInput
+                    type="text"
+                    id="floatingName"
+                    floatingLabel="Store name"
+                    placeholder="Name"
+                    onChange={(e) => {
+                      setInput({
+                        ...input,
+                        name: e.target.value,
+                      })
+                    }}
+                    defaultValue={store.name}
+                    required
+                  />
+                  <CFormInput
+                    type="text"
+                    id="floatingAddress"
+                    floatingLabel="Store address"
+                    placeholder="Address"
+                    onChange={(e) => {
+                      setInput({
+                        ...input,
+                        address: e.target.value,
+                      })
+                    }}
+                    defaultValue={store.address}
+                    required
+                  />
+                  <CFormInput
+                    type="text"
+                    id="floatingContact"
+                    floatingLabel="Store contact"
+                    placeholder="Contact"
+                    onChange={(e) => {
+                      setInput({
+                        ...input,
+                        contact: e.target.value,
+                      })
+                    }}
+                    defaultValue={store.contact}
+                  />
+                  <CFormInput
+                    type="number"
+                    id="floatingLongitude"
+                    floatingLabel="Aspect Longitude"
+                    placeholder="Longitude"
+                    min={-180}
+                    max={180}
+                    onChange={(e) => {
+                      setInput({
+                        ...input,
+                        lon: parseFloat(e.target.value),
+                      })
+                    }}
+                    defaultValue={store.lon}
+                    required
+                  />
+                  <CFormInput
+                    type="number"
+                    id="floatingLatitude"
+                    floatingLabel="Aspect Latitude"
+                    placeholder="Latitude"
+                    min={-90}
+                    max={90}
+                    onChange={(e) => {
+                      setInput({
+                        ...input,
+                        lat: parseFloat(e.target.value),
+                      })
+                    }}
+                    defaultValue={store.lat}
+                    required
+                  />
+                </CModalBody>
+                <CModalFooter>
+                  <CButton
+                    color="secondary"
+                    onClick={() => {
+                      setVisible((prevVisible) => ({
+                        ...prevVisible,
+                        edit: {
+                          ...prevVisible.edit,
+                          [store.id]: false,
+                        },
+                      }))
+                    }}
+                  >
+                    Close
+                  </CButton>
+                  <CButton color="primary" type="submit">
+                    Edit Store
+                  </CButton>
+                </CModalFooter>
+              </CForm>
             </CModal>
 
             <CModal

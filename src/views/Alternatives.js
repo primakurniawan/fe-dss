@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import Axios from 'axios'
 import {
@@ -13,6 +13,7 @@ import {
   CFormSelect,
   CListGroup,
   CListGroupItem,
+  CForm,
 } from '@coreui/react'
 const { useSelector } = require('react-redux')
 
@@ -27,12 +28,10 @@ const Alternatives = () => {
     delete: {},
   })
 
-  const [input, setInput] = useState({
-    name: '',
-    criteria_idParameter_id: {},
-  })
   const [criteria_idParameter_id, setCriteria_idParameter_id] = useState({})
   const [name, setName] = useState('')
+  const form = useRef(null)
+
   const { selected } = useSelector((state) => state.categories)
 
   const getAlternative = async (category_id) => {
@@ -63,46 +62,44 @@ const Alternatives = () => {
           alternative_id: alternative.alternative_id,
           name: alternative.alternative_name,
           action: (
-            <>
-              <CButtonGroup role="group" aria-label="Basic action" key={alternative.alternative_id}>
-                <CButton
-                  color="warning"
-                  onClick={() => {
-                    setVisible((prevVisible) => ({
-                      ...prevVisible,
-                      edit: {
-                        ...prevVisible.edit,
-                        [alternative.alternative_id]: true,
-                      },
-                    }))
-                  }}
-                >
-                  Edit
-                </CButton>
+            <CButtonGroup role="group" aria-label="Basic action" key={alternative.alternative_id}>
+              <CButton
+                color="warning"
+                onClick={() => {
+                  setVisible((prevVisible) => ({
+                    ...prevVisible,
+                    edit: {
+                      ...prevVisible.edit,
+                      [alternative.alternative_id]: true,
+                    },
+                  }))
+                }}
+              >
+                Edit
+              </CButton>
 
-                <CButton
-                  color="danger"
-                  onClick={() => {
-                    setVisible((prevVisible) => ({
-                      ...prevVisible,
-                      delete: {
-                        ...prevVisible.delete,
-                        [alternative.alternative_id]: true,
-                      },
-                    }))
-                  }}
-                >
-                  Delete
-                </CButton>
-              </CButtonGroup>
-            </>
+              <CButton
+                color="danger"
+                onClick={() => {
+                  setVisible((prevVisible) => ({
+                    ...prevVisible,
+                    delete: {
+                      ...prevVisible.delete,
+                      [alternative.alternative_id]: true,
+                    },
+                  }))
+                }}
+              >
+                Delete
+              </CButton>
+            </CButtonGroup>
           ),
         }
       }),
     )
   }
 
-  const addAlternative = async () => {
+  const addAlternative = async (event) => {
     const parameters_id = []
     for (const [, value] of Object.entries(criteria_idParameter_id)) {
       parameters_id.push(value)
@@ -225,55 +222,58 @@ const Alternatives = () => {
         >
           <CModalTitle>Add New Alternative</CModalTitle>
         </CModalHeader>
-        <CModalBody>
-          <CFormInput
-            type="text"
-            id="floatingName"
-            floatingLabel="Alternative name"
-            placeholder="Name"
-            onChange={(e) => setName(e.target.value)}
-            size="sm"
-          />
-          {parametersDetail.map((aspect) => {
-            return aspect.criteria.map((criteria) => {
-              return (
-                <CFormSelect
-                  size="sm"
-                  label={criteria.criteria_name}
-                  key={criteria.criteria_id}
-                  options={criteria.parameters.map((parameter) => {
-                    return {
-                      value: parameter.id,
-                      label: parameter.name,
+        <CForm ref={form} onSubmit={addAlternative}>
+          <CModalBody>
+            <CFormInput
+              type="text"
+              id="floatingName"
+              floatingLabel="Alternative name"
+              placeholder="Name"
+              onChange={(e) => setName(e.target.value)}
+              size="sm"
+              required
+            />
+            {parametersDetail.map((aspect) => {
+              return aspect.criteria.map((criteria) => {
+                return (
+                  <CFormSelect
+                    size="sm"
+                    label={criteria.criteria_name}
+                    key={criteria.criteria_id}
+                    options={criteria.parameters.map((parameter) => {
+                      return {
+                        value: parameter.id,
+                        label: parameter.name,
+                      }
+                    })}
+                    onChange={(e) =>
+                      setCriteria_idParameter_id((prevState) => ({
+                        ...prevState,
+                        [criteria.criteria_id]: parseInt(e.target.value),
+                      }))
                     }
-                  })}
-                  onChange={(e) =>
-                    setCriteria_idParameter_id((prevState) => ({
-                      ...prevState,
-                      [criteria.criteria_id]: parseInt(e.target.value),
-                    }))
-                  }
-                />
-              )
-            })
-          })}
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() =>
-              setVisible({
-                ...visible,
-                add: false,
+                  />
+                )
               })
-            }
-          >
-            Close
-          </CButton>
-          <CButton color="primary" onClick={addAlternative}>
-            Add New Alternative
-          </CButton>
-        </CModalFooter>
+            })}
+          </CModalBody>
+          <CModalFooter>
+            <CButton
+              color="secondary"
+              onClick={() =>
+                setVisible({
+                  ...visible,
+                  add: false,
+                })
+              }
+            >
+              Close
+            </CButton>
+            <CButton color="primary" type="submit">
+              Add New Alternative
+            </CButton>
+          </CModalFooter>
+        </CForm>
       </CModal>
       <DataTable
         columns={columns}
@@ -311,66 +311,66 @@ const Alternatives = () => {
               >
                 <CModalTitle>Edit Alternative</CModalTitle>
               </CModalHeader>
-              <CModalBody>
-                <CFormInput
-                  type="text"
-                  id="floatingName"
-                  floatingLabel="Alternative name"
-                  placeholder="Name"
-                  onChange={(e) => setName(e.target.value)}
-                  defaultValue={alternative.name}
-                />
-                {parametersDetail.map((aspect) => {
-                  return aspect.criteria.map((criteria) => {
-                    return (
-                      <CFormSelect
-                        key={criteria.criteria_id}
-                        options={criteria.parameters.map((parameter) => {
-                          return {
-                            value: parameter.id,
-                            label: parameter.name,
+              <CForm onSubmit={() => editAlternative(alternative.alternative_id)}>
+                <CModalBody>
+                  <CFormInput
+                    type="text"
+                    id="floatingName"
+                    floatingLabel="Alternative name"
+                    placeholder="Name"
+                    onChange={(e) => setName(e.target.value)}
+                    defaultValue={alternative.name}
+                    required
+                  />
+                  {parametersDetail.map((aspect) => {
+                    return aspect.criteria.map((criteria) => {
+                      return (
+                        <CFormSelect
+                          key={criteria.criteria_id}
+                          options={criteria.parameters.map((parameter) => {
+                            return {
+                              value: parameter.id,
+                              label: parameter.name,
+                            }
+                          })}
+                          onChange={(e) =>
+                            setCriteria_idParameter_id((prevState) => ({
+                              ...prevState,
+                              [criteria.criteria_id]: parseInt(e.target.value),
+                            }))
                           }
-                        })}
-                        onChange={(e) =>
-                          setCriteria_idParameter_id((prevState) => ({
-                            ...prevState,
-                            [criteria.criteria_id]: parseInt(e.target.value),
-                          }))
-                        }
-                        defaultValue={
-                          data
-                            .filter((e) => e.alternative_id === alternative.alternative_id)[0]
-                            ?.aspects.filter((e) => e.aspect_id === aspect.aspect_id)[0]
-                            ?.criteria.filter((e) => e.criteria_id === criteria.criteria_id)[0]
-                            ?.parameter.parameter_id
-                        }
-                      />
-                    )
-                  })
-                })}{' '}
-              </CModalBody>
-              <CModalFooter>
-                <CButton
-                  color="secondary"
-                  onClick={() =>
-                    setVisible((prevVisible) => ({
-                      ...prevVisible,
-                      edit: {
-                        ...prevVisible.edit,
-                        [alternative.alternative_id]: false,
-                      },
-                    }))
-                  }
-                >
-                  Close
-                </CButton>
-                <CButton
-                  color="primary"
-                  onClick={editAlternative.bind(this, alternative.alternative_id)}
-                >
-                  Edit Alternative
-                </CButton>
-              </CModalFooter>
+                          defaultValue={
+                            data
+                              .filter((e) => e.alternative_id === alternative.alternative_id)[0]
+                              ?.aspects.filter((e) => e.aspect_id === aspect.aspect_id)[0]
+                              ?.criteria.filter((e) => e.criteria_id === criteria.criteria_id)[0]
+                              ?.parameter.parameter_id
+                          }
+                        />
+                      )
+                    })
+                  })}{' '}
+                </CModalBody>
+                <CModalFooter>
+                  <CButton
+                    color="secondary"
+                    onClick={() =>
+                      setVisible((prevVisible) => ({
+                        ...prevVisible,
+                        edit: {
+                          ...prevVisible.edit,
+                          [alternative.alternative_id]: false,
+                        },
+                      }))
+                    }
+                  >
+                    Close
+                  </CButton>
+                  <CButton color="primary" type="submit">
+                    Edit Alternative
+                  </CButton>
+                </CModalFooter>
+              </CForm>
             </CModal>
 
             <CModal

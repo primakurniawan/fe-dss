@@ -11,6 +11,7 @@ import {
   CModalHeader,
   CModalTitle,
   CFormSelect,
+  CForm,
 } from '@coreui/react'
 import { useSelector } from 'react-redux'
 
@@ -176,62 +177,66 @@ const Criteria = () => {
         >
           <CModalTitle>Add New Criteria</CModalTitle>
         </CModalHeader>
-        <CModalBody>
-          <CFormSelect
-            options={aspects.map((aspect) => ({
-              value: aspect.id,
-              label: aspect.name,
-            }))}
-            onChange={(e) => {
-              setInput((prevInput) => ({
-                ...prevInput,
-                aspect_id: parseInt(e.target.value),
-              }))
-            }}
-          />
-          <CFormInput
-            type="text"
-            id="floatingName"
-            floatingLabel="Criteria name"
-            placeholder="Name"
-            onChange={(e) => {
-              setInput((prevInput) => ({
-                ...prevInput,
-                name: e.target.value,
-              }))
-            }}
-          />
-          <CFormInput
-            type="number"
-            id="floatingPercentage"
-            floatingLabel="Criteria Percentage"
-            placeholder="Percentage"
-            min={0}
-            max={100}
-            onChange={(e) => {
-              setInput((prevInput) => ({
-                ...prevInput,
-                percentage: parseInt(e.target.value),
-              }))
-            }}
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => {
-              setVisible({
-                ...visible,
-                add: false,
-              })
-            }}
-          >
-            Close
-          </CButton>
-          <CButton color="primary" onClick={addCriteria}>
-            Add New Criteria
-          </CButton>
-        </CModalFooter>
+        <CForm onSubmit={addCriteria}>
+          <CModalBody>
+            <CFormSelect
+              options={aspects.map((aspect) => ({
+                value: aspect.id,
+                label: aspect.name,
+              }))}
+              onChange={(e) => {
+                setInput((prevInput) => ({
+                  ...prevInput,
+                  aspect_id: parseInt(e.target.value),
+                }))
+              }}
+            />
+            <CFormInput
+              type="text"
+              id="floatingName"
+              floatingLabel="Criteria name"
+              placeholder="Name"
+              onChange={(e) => {
+                setInput((prevInput) => ({
+                  ...prevInput,
+                  name: e.target.value,
+                }))
+              }}
+              required
+            />
+            <CFormInput
+              type="number"
+              id="floatingPercentage"
+              floatingLabel="Criteria Percentage"
+              placeholder="Percentage"
+              min={0}
+              max={100}
+              onChange={(e) => {
+                setInput((prevInput) => ({
+                  ...prevInput,
+                  percentage: parseInt(e.target.value),
+                }))
+              }}
+              required
+            />
+          </CModalBody>
+          <CModalFooter>
+            <CButton
+              color="secondary"
+              onClick={() => {
+                setVisible({
+                  ...visible,
+                  add: false,
+                })
+              }}
+            >
+              Close
+            </CButton>
+            <CButton color="primary" type="submit">
+              Add New Criteria
+            </CButton>
+          </CModalFooter>
+        </CForm>
       </CModal>
       <DataTable columns={columns} data={data} pagination />
 
@@ -263,68 +268,72 @@ const Criteria = () => {
               >
                 <CModalTitle>Edit Criteria</CModalTitle>
               </CModalHeader>
-              <CModalBody>
-                <CFormSelect
-                  value={criteria.aspect_id}
-                  options={aspects.map((aspect) => ({
-                    value: aspect.id,
-                    label: aspect.name,
-                  }))}
-                  onChange={(e) => {
-                    setInput((prevInput) => ({
-                      ...prevInput,
-                      aspect_id: parseInt(e.target.value),
-                    }))
-                  }}
-                />
-                <CFormInput
-                  type="text"
-                  id="floatingName"
-                  floatingLabel="Criteria name"
-                  placeholder="Name"
-                  onChange={(e) => {
-                    setInput((prevInput) => ({
-                      ...prevInput,
-                      name: e.target.value,
-                    }))
-                  }}
-                  defaultValue={criteria.name}
-                />
-                <CFormInput
-                  type="number"
-                  id="floatingPercentage"
-                  floatingLabel="Criteria Percentage"
-                  placeholder="Percentage"
-                  min={0}
-                  max={100}
-                  onChange={(e) => {
-                    setInput((prevInput) => ({
-                      ...prevInput,
-                      percentage: parseInt(e.target.value),
-                    }))
-                  }}
-                  defaultValue={criteria.percentage}
-                />
-              </CModalBody>
-              <CModalFooter>
-                <CButton
-                  color="secondary"
-                  onClick={() => {
-                    setVisible({
-                      ...visible,
-                      edit: {
-                        ...visible.edit,
-                        [criteria.id]: false,
-                      },
-                    })
-                  }}
-                >
-                  Close
-                </CButton>
-                <CButton color="primary" onClick={editCriteria.bind(this, criteria.id)}>
-                  Edit Criteria
-                </CButton>
-              </CModalFooter>
+              <CForm onSubmit={() => editCriteria(criteria.id)}>
+                <CModalBody>
+                  <CFormSelect
+                    value={criteria.aspect_id}
+                    options={aspects.map((aspect) => ({
+                      value: aspect.id,
+                      label: aspect.name,
+                    }))}
+                    onChange={(e) => {
+                      setInput((prevInput) => ({
+                        ...prevInput,
+                        aspect_id: parseInt(e.target.value),
+                      }))
+                    }}
+                  />
+                  <CFormInput
+                    type="text"
+                    id="floatingName"
+                    floatingLabel="Criteria name"
+                    placeholder="Name"
+                    onChange={(e) => {
+                      setInput((prevInput) => ({
+                        ...prevInput,
+                        name: e.target.value,
+                      }))
+                    }}
+                    defaultValue={criteria.name}
+                    required
+                  />
+                  <CFormInput
+                    type="number"
+                    id="floatingPercentage"
+                    floatingLabel="Criteria Percentage"
+                    placeholder="Percentage"
+                    min={0}
+                    max={100}
+                    onChange={(e) => {
+                      setInput((prevInput) => ({
+                        ...prevInput,
+                        percentage: parseInt(e.target.value),
+                      }))
+                    }}
+                    defaultValue={criteria.percentage}
+                    required
+                  />
+                </CModalBody>
+                <CModalFooter>
+                  <CButton
+                    color="secondary"
+                    onClick={() => {
+                      setVisible({
+                        ...visible,
+                        edit: {
+                          ...visible.edit,
+                          [criteria.id]: false,
+                        },
+                      })
+                    }}
+                  >
+                    Close
+                  </CButton>
+                  <CButton color="primary" type="submit">
+                    Edit Criteria
+                  </CButton>
+                </CModalFooter>
+              </CForm>
             </CModal>
 
             <CModal

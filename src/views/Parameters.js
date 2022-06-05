@@ -11,6 +11,7 @@ import {
   CModalHeader,
   CModalTitle,
   CFormSelect,
+  CForm,
 } from '@coreui/react'
 import { useSelector } from 'react-redux'
 
@@ -175,62 +176,66 @@ const Parameter = () => {
         >
           <CModalTitle>Add New Parameter</CModalTitle>
         </CModalHeader>
-        <CModalBody>
-          <CFormSelect
-            options={criteria.map((criteria) => ({
-              value: criteria.id,
-              label: criteria.name,
-            }))}
-            onChange={(e) =>
-              setInput((prevInput) => ({
-                ...prevInput,
-                criteria_id: parseInt(e.target.value),
-              }))
-            }
-          />
-          <CFormInput
-            type="text"
-            id="floatingName"
-            floatingLabel="Parameter name"
-            placeholder="Name"
-            onChange={(e) =>
-              setInput((prevInput) => ({
-                ...prevInput,
-                name: e.target.value,
-              }))
-            }
-          />
-          <CFormInput
-            type="number"
-            id="floatingPercentage"
-            floatingLabel="Parameter Percentage"
-            placeholder="Percentage"
-            min={0}
-            max={100}
-            onChange={(e) =>
-              setInput((prevInput) => ({
-                ...prevInput,
-                point: parseInt(e.target.value),
-              }))
-            }
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() =>
-              setVisible({
-                ...visible,
-                add: false,
-              })
-            }
-          >
-            Close
-          </CButton>
-          <CButton color="primary" onClick={addParameter}>
-            Add New Parameter
-          </CButton>
-        </CModalFooter>
+        <CForm onSubmit={addParameter}>
+          <CModalBody>
+            <CFormSelect
+              options={criteria.map((criteria) => ({
+                value: criteria.id,
+                label: criteria.name,
+              }))}
+              onChange={(e) =>
+                setInput((prevInput) => ({
+                  ...prevInput,
+                  criteria_id: parseInt(e.target.value),
+                }))
+              }
+            />
+            <CFormInput
+              type="text"
+              id="floatingName"
+              floatingLabel="Parameter name"
+              placeholder="Name"
+              onChange={(e) =>
+                setInput((prevInput) => ({
+                  ...prevInput,
+                  name: e.target.value,
+                }))
+              }
+              required
+            />
+            <CFormInput
+              type="number"
+              id="floatingPercentage"
+              floatingLabel="Parameter Percentage"
+              placeholder="Percentage"
+              min={0}
+              max={100}
+              onChange={(e) =>
+                setInput((prevInput) => ({
+                  ...prevInput,
+                  point: parseInt(e.target.value),
+                }))
+              }
+              required
+            />
+          </CModalBody>
+          <CModalFooter>
+            <CButton
+              color="secondary"
+              onClick={() =>
+                setVisible({
+                  ...visible,
+                  add: false,
+                })
+              }
+            >
+              Close
+            </CButton>
+            <CButton color="primary" type="submit">
+              Add New Parameter
+            </CButton>
+          </CModalFooter>
+        </CForm>
       </CModal>
       <DataTable columns={columns} data={data} pagination />
 
@@ -262,55 +267,59 @@ const Parameter = () => {
               >
                 <CModalTitle>Edit Parameter</CModalTitle>
               </CModalHeader>
-              <CModalBody>
-                <CFormInput
-                  type="text"
-                  id="floatingName"
-                  floatingLabel="Parameter name"
-                  placeholder="Name"
-                  onChange={(e) =>
-                    setInput((prevInput) => ({
-                      ...prevInput,
-                      name: e.target.value,
-                    }))
-                  }
-                  defaultValue={parameter.name}
-                />
-                <CFormInput
-                  type="number"
-                  id="floatingPercentage"
-                  floatingLabel="Parameter Percentage"
-                  placeholder="Percentage"
-                  min={0}
-                  max={100}
-                  onChange={(e) =>
-                    setInput((prevInput) => ({
-                      ...prevInput,
-                      point: parseInt(e.target.value),
-                    }))
-                  }
-                  defaultValue={parameter.point}
-                />
-              </CModalBody>
-              <CModalFooter>
-                <CButton
-                  color="secondary"
-                  onClick={() =>
-                    setVisible((prevVisible) => ({
-                      ...prevVisible,
-                      edit: {
-                        ...prevVisible.edit,
-                        [parameter.id]: false,
-                      },
-                    }))
-                  }
-                >
-                  Close
-                </CButton>
-                <CButton color="primary" onClick={editParameter.bind(this, parameter.id)}>
-                  Edit Parameter
-                </CButton>
-              </CModalFooter>
+              <CForm onSubmit={() => editParameter(parameter.id)}>
+                <CModalBody>
+                  <CFormInput
+                    type="text"
+                    id="floatingName"
+                    floatingLabel="Parameter name"
+                    placeholder="Name"
+                    onChange={(e) =>
+                      setInput((prevInput) => ({
+                        ...prevInput,
+                        name: e.target.value,
+                      }))
+                    }
+                    defaultValue={parameter.name}
+                    required
+                  />
+                  <CFormInput
+                    type="number"
+                    id="floatingPercentage"
+                    floatingLabel="Parameter Percentage"
+                    placeholder="Percentage"
+                    min={0}
+                    max={100}
+                    onChange={(e) =>
+                      setInput((prevInput) => ({
+                        ...prevInput,
+                        point: parseInt(e.target.value),
+                      }))
+                    }
+                    defaultValue={parameter.point}
+                    required
+                  />
+                </CModalBody>
+                <CModalFooter>
+                  <CButton
+                    color="secondary"
+                    onClick={() =>
+                      setVisible((prevVisible) => ({
+                        ...prevVisible,
+                        edit: {
+                          ...prevVisible.edit,
+                          [parameter.id]: false,
+                        },
+                      }))
+                    }
+                  >
+                    Close
+                  </CButton>
+                  <CButton color="primary" type="submit">
+                    Edit Parameter
+                  </CButton>
+                </CModalFooter>
+              </CForm>
             </CModal>
 
             <CModal
