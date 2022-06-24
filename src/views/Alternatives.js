@@ -17,6 +17,8 @@ import {
 } from '@coreui/react'
 const { useSelector } = require('react-redux')
 
+import '@coreui/coreui/dist/css/coreui.min.css'
+
 const Alternatives = () => {
   const [data, setData] = useState([])
   const [rows, setRows] = useState([])
@@ -73,6 +75,15 @@ const Alternatives = () => {
                       [alternative.alternative_id]: true,
                     },
                   }))
+                  setName(alternative.alternative_name)
+                  console.log(alternative)
+                  const criteriaIdParameterId = {}
+                  alternative.aspects.forEach((e) => {
+                    e.criteria.forEach((criteria) => {
+                      criteriaIdParameterId[criteria.criteria_id] = criteria.parameter.id
+                    })
+                  })
+                  setCriteria_idParameter_id(criteriaIdParameterId)
                 }}
               >
                 Edit
@@ -199,7 +210,7 @@ const Alternatives = () => {
           })
         }
         color="success"
-        my={5}
+        className="mb-3"
       >
         Add Alternative
       </CButton>
@@ -225,6 +236,7 @@ const Alternatives = () => {
         <CForm ref={form} onSubmit={addAlternative}>
           <CModalBody>
             <CFormInput
+              className="mb-3"
               type="text"
               id="floatingName"
               floatingLabel="Alternative name"
@@ -237,6 +249,7 @@ const Alternatives = () => {
               return aspect.criteria.map((criteria) => {
                 return (
                   <CFormSelect
+                    className="mb-3"
                     size="sm"
                     label={criteria.criteria_name}
                     key={criteria.criteria_id}
@@ -314,6 +327,7 @@ const Alternatives = () => {
               <CForm onSubmit={() => editAlternative(alternative.alternative_id)}>
                 <CModalBody>
                   <CFormInput
+                    className="mb-3"
                     type="text"
                     id="floatingName"
                     floatingLabel="Alternative name"
@@ -326,6 +340,8 @@ const Alternatives = () => {
                     return aspect.criteria.map((criteria) => {
                       return (
                         <CFormSelect
+                          className="mb-3"
+                          label={criteria.criteria_name}
                           key={criteria.criteria_id}
                           options={criteria.parameters.map((parameter) => {
                             return {

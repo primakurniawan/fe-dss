@@ -14,6 +14,7 @@ import {
   CForm,
 } from '@coreui/react'
 import { useSelector } from 'react-redux'
+import '@coreui/coreui/dist/css/coreui.min.css'
 
 const Parameter = () => {
   const [data, setData] = useState([])
@@ -154,6 +155,7 @@ const Parameter = () => {
           })
         }
         color="success"
+        className="mb-3"
       >
         Add Parameter
       </CButton>
@@ -179,6 +181,8 @@ const Parameter = () => {
         <CForm onSubmit={addParameter}>
           <CModalBody>
             <CFormSelect
+              className="mb-3"
+              label="Criteria"
               options={criteria.map((criteria) => ({
                 value: criteria.id,
                 label: criteria.name,
@@ -191,6 +195,7 @@ const Parameter = () => {
               }
             />
             <CFormInput
+              className="mb-3"
               type="text"
               id="floatingName"
               floatingLabel="Parameter name"
@@ -204,10 +209,11 @@ const Parameter = () => {
               required
             />
             <CFormInput
+              className="mb-3"
               type="number"
-              id="floatingPercentage"
-              floatingLabel="Parameter Percentage"
-              placeholder="Percentage"
+              id="floatingPoint"
+              floatingLabel="Parameter Point"
+              placeholder="Point"
               min={0}
               max={100}
               onChange={(e) =>
@@ -270,6 +276,7 @@ const Parameter = () => {
               <CForm onSubmit={() => editParameter(parameter.id)}>
                 <CModalBody>
                   <CFormInput
+                    className="mb-3"
                     type="text"
                     id="floatingName"
                     floatingLabel="Parameter name"
@@ -284,10 +291,11 @@ const Parameter = () => {
                     required
                   />
                   <CFormInput
+                    className="mb-3"
                     type="number"
-                    id="floatingPercentage"
-                    floatingLabel="Parameter Percentage"
-                    placeholder="Percentage"
+                    id="floatingPoint"
+                    floatingLabel="Parameter Point"
+                    placeholder="Point"
                     min={0}
                     max={100}
                     onChange={(e) =>

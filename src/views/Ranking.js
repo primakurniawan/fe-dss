@@ -13,6 +13,7 @@ import {
   CListGroupItem,
 } from '@coreui/react'
 import { useSelector } from 'react-redux'
+import '@coreui/coreui/dist/css/coreui.min.css'
 
 const Ranking = () => {
   const [data, setData] = useState([])
@@ -106,7 +107,7 @@ const Ranking = () => {
   }, [rows])
   return (
     <>
-      <CButton onClick={() => setVisible(true)} color="success">
+      <CButton onClick={() => setVisible(true)} color="success" className="mb-3">
         Add Preference
       </CButton>
       <CModal visible={visible} onClose={() => setVisible(false)}>
@@ -118,6 +119,8 @@ const Ranking = () => {
             return aspect.criteria.map((criteria) => {
               return (
                 <CFormSelect
+                  className="mb-3"
+                  label={criteria.criteria_name}
                   key={criteria.criteria_id}
                   options={criteria.parameters.map((parameter) => {
                     return {
@@ -140,7 +143,7 @@ const Ranking = () => {
           <CButton color="secondary" onClick={() => setVisible(false)}>
             Close
           </CButton>
-          <CButton color="primary" onClick={getAlternativeRank.bind(this, selected)}>
+          <CButton color="primary" onClick={() => getAlternativeRank(selected)}>
             Add Preference
           </CButton>
         </CModalFooter>

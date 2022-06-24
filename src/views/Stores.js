@@ -13,6 +13,7 @@ import {
   CModalTitle,
 } from '@coreui/react'
 import { useSelector } from 'react-redux'
+import '@coreui/coreui/dist/css/coreui.min.css'
 
 const Stores = () => {
   const [columns, setColumns] = useState()
@@ -147,6 +148,7 @@ const Stores = () => {
           })
         }}
         color="success"
+        className="mb-3"
       >
         Add Store
       </CButton>
@@ -172,6 +174,7 @@ const Stores = () => {
         <CForm onSubmit={addStore}>
           <CModalBody>
             <CFormInput
+              className="mb-3"
               type="text"
               id="floatingName"
               floatingLabel="Store name"
@@ -185,6 +188,7 @@ const Stores = () => {
               required
             />
             <CFormInput
+              className="mb-3"
               type="text"
               id="floatingAddress"
               floatingLabel="Store address"
@@ -198,6 +202,7 @@ const Stores = () => {
               required
             />
             <CFormInput
+              className="mb-3"
               type="text"
               id="floatingContact"
               floatingLabel="Store contact"
@@ -210,6 +215,7 @@ const Stores = () => {
               }}
             />
             <CFormInput
+              className="mb-3"
               type="number"
               id="floatingLongitude"
               floatingLabel="Aspect Longitude"
@@ -225,6 +231,7 @@ const Stores = () => {
               required
             />
             <CFormInput
+              className="mb-3"
               type="number"
               id="floatingLatitude"
               floatingLabel="Aspect Latitude"
@@ -291,6 +298,7 @@ const Stores = () => {
               <CForm onSubmit={() => editStore(store.id)}>
                 <CModalBody>
                   <CFormInput
+                    className="mb-3"
                     type="text"
                     id="floatingName"
                     floatingLabel="Store name"
@@ -305,6 +313,7 @@ const Stores = () => {
                     required
                   />
                   <CFormInput
+                    className="mb-3"
                     type="text"
                     id="floatingAddress"
                     floatingLabel="Store address"
@@ -319,6 +328,8 @@ const Stores = () => {
                     required
                   />
                   <CFormInput
+                    className="mb-3"
+                    className="mb-3"
                     type="text"
                     id="floatingContact"
                     floatingLabel="Store contact"
@@ -332,6 +343,7 @@ const Stores = () => {
                     defaultValue={store.contact}
                   />
                   <CFormInput
+                    className="mb-3"
                     type="number"
                     id="floatingLongitude"
                     floatingLabel="Aspect Longitude"
@@ -348,6 +360,7 @@ const Stores = () => {
                     required
                   />
                   <CFormInput
+                    className="mb-3"
                     type="number"
                     id="floatingLatitude"
                     floatingLabel="Aspect Latitude"

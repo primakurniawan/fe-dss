@@ -14,6 +14,7 @@ import {
   CForm,
 } from '@coreui/react'
 import { useSelector } from 'react-redux'
+import '@coreui/coreui/dist/css/coreui.min.css'
 
 const Criteria = () => {
   const [columns, setColumns] = useState()
@@ -155,6 +156,7 @@ const Criteria = () => {
           })
         }}
         color="success"
+        className="mb-3"
       >
         Add Criteria
       </CButton>
@@ -180,6 +182,8 @@ const Criteria = () => {
         <CForm onSubmit={addCriteria}>
           <CModalBody>
             <CFormSelect
+              className="mb-3"
+              label="Aspect"
               options={aspects.map((aspect) => ({
                 value: aspect.id,
                 label: aspect.name,
@@ -192,6 +196,7 @@ const Criteria = () => {
               }}
             />
             <CFormInput
+              className="mb-3"
               type="text"
               id="floatingName"
               floatingLabel="Criteria name"
@@ -205,6 +210,7 @@ const Criteria = () => {
               required
             />
             <CFormInput
+              className="mb-3"
               type="number"
               id="floatingPercentage"
               floatingLabel="Criteria Percentage"
@@ -271,6 +277,8 @@ const Criteria = () => {
               <CForm onSubmit={() => editCriteria(criteria.id)}>
                 <CModalBody>
                   <CFormSelect
+                    className="mb-3"
+                    label="Aspect"
                     value={criteria.aspect_id}
                     options={aspects.map((aspect) => ({
                       value: aspect.id,
@@ -284,6 +292,7 @@ const Criteria = () => {
                     }}
                   />
                   <CFormInput
+                    className="mb-3"
                     type="text"
                     id="floatingName"
                     floatingLabel="Criteria name"
@@ -298,6 +307,7 @@ const Criteria = () => {
                     required
                   />
                   <CFormInput
+                    className="mb-3"
                     type="number"
                     id="floatingPercentage"
                     floatingLabel="Criteria Percentage"

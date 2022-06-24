@@ -13,6 +13,7 @@ import {
   CModalTitle,
 } from '@coreui/react'
 import { useSelector } from 'react-redux'
+import '@coreui/coreui/dist/css/coreui.min.css'
 
 const Aspects = () => {
   const [columns, setColumns] = useState()
@@ -147,6 +148,7 @@ const Aspects = () => {
           })
         }}
         color="success"
+        className="mb-3"
       >
         Add Aspect
       </CButton>
@@ -172,6 +174,7 @@ const Aspects = () => {
         <CForm onSubmit={addAspect}>
           <CModalBody>
             <CFormInput
+              className="mb-3"
               type="text"
               id="floatingName"
               floatingLabel="Aspect name"
@@ -185,6 +188,7 @@ const Aspects = () => {
               required
             />
             <CFormInput
+              className="mb-3"
               type="number"
               id="floatingPercentage"
               floatingLabel="Aspect Percentage"
@@ -251,6 +255,7 @@ const Aspects = () => {
               <CForm onSubmit={() => editAspect(aspect.id)}>
                 <CModalBody>
                   <CFormInput
+                    className="mb-3"
                     type="text"
                     id="floatingName"
                     floatingLabel="Aspect name"
@@ -267,6 +272,7 @@ const Aspects = () => {
                     required
                   />
                   <CFormInput
+                    className="mb-3"
                     type="number"
                     id="floatingPercentage"
                     floatingLabel="Aspect Percentage"
